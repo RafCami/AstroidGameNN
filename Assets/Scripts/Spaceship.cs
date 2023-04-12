@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -6,31 +7,48 @@ public class Spaceship : MonoBehaviour
 {
     float movementSpeed = 5;
     string movement = "stop";
-    int lives = 3;
     int score = 0;
-    private Rigidbody2D rBody;
-    private Collider2D cBody;
+    private bool initialized = false;
+    private NeuralNetwork net;
+    private Transform astroid1;
+    private Transform astroid2;
+    private GameObject explosion;
 
-    public GameObject explosion;
 
-    void Start()
+    void init(NeuralNetwork nnet)
     {
-        rBody = GetComponent<Rigidbody2D>();
-        cBody = GetComponent<Collider2D>();
-        cBody.isTrigger = true;
-        rBody.isKinematic = true;
-
+        this.net = nnet;
+        astroid1 = transform;
+        astroid2 = transform;
+        this.initialized = true;
     }
     void Update()
     {
-        if (movement == "right" || movement == "left")
+        if (initialized == true)
         {
+            float[] inputs = new float[2];
+            inputs[0] = Vector2.Distance(transform.position, astroid1.position);
+            inputs[1] = Vector2.Distance(transform.position, astroid2.position);
+
+            
+            float[] output = net.FeedForward(inputs);
+            if (Convert.ToInt32(output[0]) == 1)
+            {
+                this.movement = "right";
+            }
+            else if (Convert.ToInt32(output[0]) == -1)
+            {
+                this.movement = "left";
+            }
+            else
+            {
+                this.movement = "stop";
+            }
+
             Move();
+
         }
-        else
-        {
-            StopMoving();
-        }
+        
         
     }
 
@@ -57,7 +75,7 @@ public class Spaceship : MonoBehaviour
         {
             transform.Translate(Vector3.right * movementSpeed * Time.deltaTime);
         }
-        else
+        if (movement == "left")
         {
             transform.Translate(Vector3.left * movementSpeed * Time.deltaTime);
         }
@@ -66,27 +84,31 @@ public class Spaceship : MonoBehaviour
     void OnTriggerEnter2D(Collider2D other)
     {
         Debug.Log("BOTS");
-        if (other.gameObject.name == "Asteroid(Clone)")
+        if (other.gameObject.tag == "Asteroid")
         {
-            if (lives > 0)
-            {
-                lives--;
-                gameObject.transform.position = new Vector2(0, -4);
-                Debug.Log("Lives: " + lives);
-            }
-            else
-            {
-                explosion = Instantiate(explosion, transform.position, Quaternion.identity);
-                gameObject.SetActive(false);
-                Debug.Log($"Your score is: {score}");
-                Debug.Log("Game Over");
-            }
+            explosion = Instantiate(explosion, transform.position, Quaternion.identity);
+            Invoke("TimerExplosion", 0.5f);
+            gameObject.SetActive(false);
+            this.net.SetFitness(this.score);
+            Debug.Log($"Your score is: {score}");
+            Debug.Log("Game Over");
         }
+    }
+
+    void TimerExplosion()
+    {
+        Destroy(explosion);
     }
 
     public void IncreaseScore()
     {
         score++;
+    }
+
+    public void ClosestAstroids(Transform astroid1, Transform astroid2)
+    {
+        this.astroid1 = astroid1;
+        this.astroid2 = astroid2;
     }
 
 

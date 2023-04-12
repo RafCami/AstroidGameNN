@@ -865,9 +865,21 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: -7382216756713352522, guid: 4b60c07bd728847498bf30b3c7ad1114, type: 3}
+      propertyPath: m_BodyType
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -7382216756713352522, guid: 4b60c07bd728847498bf30b3c7ad1114, type: 3}
+      propertyPath: m_UseFullKinematicContacts
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1132335786253263300, guid: 4b60c07bd728847498bf30b3c7ad1114, type: 3}
       propertyPath: m_Name
       value: Spaceship
+      objectReference: {fileID: 0}
+    - target: {fileID: 3918850205683342241, guid: 4b60c07bd728847498bf30b3c7ad1114, type: 3}
+      propertyPath: m_IsTrigger
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6350533010845131653, guid: 4b60c07bd728847498bf30b3c7ad1114, type: 3}
       propertyPath: m_RootOrder

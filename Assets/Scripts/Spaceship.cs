@@ -8,9 +8,19 @@ public class Spaceship : MonoBehaviour
     string movement = "stop";
     int lives = 3;
     int score = 0;
+    private Rigidbody2D rBody;
+    private Collider2D cBody;
 
     public GameObject explosion;
 
+    void Start()
+    {
+        rBody = GetComponent<Rigidbody2D>();
+        cBody = GetComponent<Collider2D>();
+        cBody.isTrigger = true;
+        rBody.isKinematic = true;
+
+    }
     void Update()
     {
         if (movement == "right" || movement == "left")
@@ -21,6 +31,7 @@ public class Spaceship : MonoBehaviour
         {
             StopMoving();
         }
+        
     }
 
     public void StartMovingRight()
@@ -52,9 +63,10 @@ public class Spaceship : MonoBehaviour
         }
     }
 
-    void OnCollisionEnter2D(Collision2D collision)
+    void OnTriggerEnter2D(Collider2D other)
     {
-        if (collision.gameObject.name == "Asteroid(Clone)")
+        Debug.Log("BOTS");
+        if (other.gameObject.name == "Asteroid(Clone)")
         {
             if (lives > 0)
             {

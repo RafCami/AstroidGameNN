@@ -556,6 +556,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   asteroid: {fileID: 1347233993542951541, guid: a1489652c9db04925b6f48007c3894db, type: 3}
+  spaceship: {fileID: 1132335786253263300, guid: 4b60c07bd728847498bf30b3c7ad1114, type: 3}
 --- !u!4 &1226372501
 Transform:
   m_ObjectHideFlags: 0
@@ -588,7 +589,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b7e148ea952a14b5687cd53b0d5dc9da, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  explosion: {fileID: 7699755546714762411, guid: 6dc046723e1339b44be66d3181640bb4, type: 3}
 --- !u!1 &1625880284
 GameObject:
   m_ObjectHideFlags: 0
@@ -891,7 +891,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6350533010845131653, guid: 4b60c07bd728847498bf30b3c7ad1114, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -3.56
+      value: -3.75
       objectReference: {fileID: 0}
     - target: {fileID: 6350533010845131653, guid: 4b60c07bd728847498bf30b3c7ad1114, type: 3}
       propertyPath: m_LocalPosition.z

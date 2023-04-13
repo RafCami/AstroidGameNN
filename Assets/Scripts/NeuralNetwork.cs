@@ -168,7 +168,7 @@ public class NeuralNetwork : IComparable<NeuralNetwork>
                     if (randomNumber <= 2f)
                     { //if 1
                       //flip sign of weight
-                        weight *= -1f;
+                        //weight *= -1f;
                     }
                     else if (randomNumber <= 4f)
                     { //if 2
@@ -188,7 +188,17 @@ public class NeuralNetwork : IComparable<NeuralNetwork>
                         weight *= factor;
                     }
 
-                    weights[i][j][k] = weight;
+                    if (weights[i][j].Length == 4)
+                    {
+                        if (i == 0 && k >= 2)
+                        {
+                            weights[i][j][k] = weight * 2f;
+                        }
+                    }
+                    else
+                    {
+                        weights[i][j][k] = weight;
+                    }
                 }
             }
         }
@@ -207,6 +217,23 @@ public class NeuralNetwork : IComparable<NeuralNetwork>
     public float GetFitness()
     {
         return fitness;
+    }
+
+    public float WeightsTotal()
+    {
+        float total = 0f;
+        for (int i = 0; i < weights.Length; i++)
+        {
+            for (int j = 0; j < weights[i].Length; j++)
+            {
+                for (int k = 0; k < weights[i][j].Length; k++)
+                {
+                    total += weights[i][j][k];
+                }
+            }
+        }
+
+        return total;
     }
 
     /// <summary>

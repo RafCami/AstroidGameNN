@@ -1,17 +1,26 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
+using static UnityEngine.CompositeCollider2D;
+using Random = UnityEngine.Random;
 
 public class Manager : MonoBehaviour
 {
 
     public GameObject asteroid;
-    public GameObject spaceship;
+    public GameObject spaceshipPrefab;
+    public TMPro.TextMeshProUGUI highScoreTmp;
+    public TMPro.TextMeshProUGUI generationTmp;
+    [Range(0.1f,100)]
+    public float timeScale = 1;
 
     private bool isTraining = false;
-    private int populationSize = 10;
+    private int populationSize = 200;
     private int generation = 0;
-    private int[] layers = new int[] { 2, 10, 10, 1 };
+    private int highScore = 0;
+    private int[] layers = new int[] { 2, 50, 100, 100, 1 };
     private List<NeuralNetwork> networks = new List<NeuralNetwork>();
     private List<GameObject> asteroids = new List<GameObject>();
     private List<Spaceship> spaceships = new List<Spaceship>();
@@ -26,6 +35,7 @@ public class Manager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        Time.timeScale = timeScale;
         if (isTraining == false)
         {
             //on first gen create networks, else process existing networks
@@ -36,6 +46,12 @@ public class Manager : MonoBehaviour
             else
             {
                 networks.Sort();
+                int genHighScore = Convert.ToInt32(networks.Last().GetFitness());
+                if (genHighScore > highScore)
+                {
+                    highScore = genHighScore;
+                    highScoreTmp.text = $"High Score: {highScore} (gen {generation})";
+                }
                 for (int i = 0; i < populationSize / 2; i++)
                 {
                     networks[i] = new NeuralNetwork(networks[i + (populationSize / 2)]);
@@ -53,6 +69,7 @@ public class Manager : MonoBehaviour
 
             //start training next gen
             generation++;
+            generationTmp.text = $"Generation: {generation}";
             isTraining = true;
             GenerateSpaceships();
             InvokeRepeating("AsteroidSpawning", 0, 1);
@@ -85,8 +102,10 @@ public class Manager : MonoBehaviour
                     {
                         Destroy(asteroids[i]);
                         asteroids.RemoveAt(i);
-                        for (int j = 0; i < spaceships.Count; j++)
+                        //Debug.Log($"Remaining ships: {spaceships.Count}");
+                        for (int j = 0; j < spaceships.Count; j++)
                         {
+                            //Debug.Log($"Checking ship index {j}");
                             if (spaceships[j].IsAlive() == true)
                             {
                                 spaceships[j].IncreaseScore();
@@ -108,8 +127,24 @@ public class Manager : MonoBehaviour
 
     void AsteroidSpawning()
     {
-        float x = Random.Range(-9, 9);
+        float x;
         float y = Random.Range(8, 10);
+        int edge = Random.Range(1, 10);
+        if (edge <= 2)
+        {
+            if (edge == 1)
+            {
+                x = Random.Range(-8, -7);
+            }
+            else
+            {
+                x = Random.Range(7, 8);
+            }
+        }
+        else
+        {
+            x = Random.Range(-9, 9);
+        }
 
 
         asteroids.Add(Instantiate(asteroid, new Vector2(x, y), Quaternion.identity));
@@ -133,6 +168,8 @@ public class Manager : MonoBehaviour
         {
             populationSize++;
         }
+
+        networks = new List<NeuralNetwork>();
         for (int i = 0; i < populationSize; i++)
         {
             NeuralNetwork nn = new NeuralNetwork(layers);
@@ -156,10 +193,11 @@ public class Manager : MonoBehaviour
         //create spaceships
         for (int i = 0; i < populationSize; i++)
         {
-            GameObject go = Instantiate(spaceship, new Vector2(0, -3.75f), Quaternion.identity);
-            Spaceship s = go.GetComponent<Spaceship>();
-            s.Init(networks[i]);
-            spaceships.Add(s);
+            GameObject go = Instantiate(spaceshipPrefab, new Vector2(0, -3.75f), Quaternion.identity);
+            Spaceship ship = go.GetComponent<Spaceship>();
+            //Spaceship ship = ((GameObject)Instantiate(spaceshipPrefab, new Vector3(0, -3.75f, 0), spaceshipPrefab.transform.rotation)).GetComponent<Spaceship>();
+            ship.Init(networks[i]);
+            spaceships.Add(ship);
         }
     }
 

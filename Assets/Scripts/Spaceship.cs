@@ -14,7 +14,7 @@ public class Spaceship : MonoBehaviour
     private NeuralNetwork net;
     private Transform asteroid1;
     private Transform asteroid2;
-    private GameObject explosion;
+    //GameObject explosion;
 
 
     public void Init(NeuralNetwork nnet)
@@ -30,12 +30,14 @@ public class Spaceship : MonoBehaviour
         if (initialized == true)
         {
             float[] inputs = new float[2];
-            inputs[0] = Vector2.Distance(transform.position, asteroid1.position);
-            inputs[1] = Vector2.Distance(transform.position, asteroid2.position);
+            //inputs[0] = Vector2.Distance(transform.position, asteroid1.position) / 4.4f;
+            //inputs[1] = Vector2.Distance(transform.position, asteroid2.position) / 4.4f;
+            inputs[0] = asteroid1.position.x - transform.position.x;
+            inputs[1] = asteroid2.position.x - transform.position.x;
 
-            
             float[] output = net.FeedForward(inputs);
-            if (Convert.ToInt32(output[0]) == 1)
+            //output[0] = (output[0] / net.WeightsTotal());
+            if (Convert.ToInt64(output[0]) == 1)
             {
                 this.movement = "right";
             }
@@ -72,35 +74,47 @@ public class Spaceship : MonoBehaviour
 
     public void Move()
     {
+        Vector3 totalMovement;
         if (movement == "right")
         {
-            transform.Translate(Vector3.right * movementSpeed * Time.deltaTime);
+            totalMovement = Vector3.right * movementSpeed * Time.deltaTime;
         }
-        if (movement == "left")
+        else if (movement == "left")
         {
-            transform.Translate(Vector3.left * movementSpeed * Time.deltaTime);
+            totalMovement = Vector3.left * movementSpeed * Time.deltaTime;
         }
+        else
+        {
+            totalMovement = Vector3.zero;
+        }
+        Vector3 appliedMovement = transform.position + totalMovement;
+
+        if (appliedMovement.x < -7.4f || appliedMovement.x > 7.4f)
+        {
+            totalMovement = Vector3.zero;
+        }
+        transform.Translate(totalMovement);
     }
 
     void OnTriggerEnter2D(Collider2D other)
     {
-        Debug.Log("BOTS");
         if (other.gameObject.tag == "Asteroid")
         {
-            explosion = Instantiate(explosion, transform.position, Quaternion.identity);
-            Invoke("TimerExplosion", 0.5f);
+            //Debug.Log("BOTS");
+            //explosion = Instantiate(explosion, transform.position, Quaternion.identity);
+            //Invoke("TimerExplosion", 0.5f);
             gameObject.SetActive(false);
             this.net.SetFitness(this.score);
             this.alive = false;
-            Debug.Log($"Your score is: {score}");
-            Debug.Log("Game Over");
+            //Debug.Log($"Your score is: {score}");
+            //Debug.Log("Game Over");
         }
     }
 
-    void TimerExplosion()
-    {
-        Destroy(explosion);
-    }
+    //void TimerExplosion()
+    //{
+    //    Destroy(explosion);
+    //}
 
     public void IncreaseScore()
     {

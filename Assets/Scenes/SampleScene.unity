@@ -559,6 +559,7 @@ MonoBehaviour:
   spaceshipPrefab: {fileID: 1132335786253263300, guid: 4b60c07bd728847498bf30b3c7ad1114, type: 3}
   highScoreTmp: {fileID: 1993658452}
   generationTmp: {fileID: 1347851238}
+  timeScale: 1
 --- !u!4 &1226372501
 Transform:
   m_ObjectHideFlags: 0
